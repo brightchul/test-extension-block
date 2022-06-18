@@ -9,4 +9,6 @@ public interface ExtensionRepository extends JpaRepository<Extension, Long> {
     Extension findByExtensionName(String extensionName);
 
     Long countByType(String type);
+
+    void deleteByExtensionName(String extensionName);
 }

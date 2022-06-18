@@ -10,6 +10,7 @@ import com.test.extensionblock.repository.ExtensionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.List;
@@ -36,11 +37,12 @@ public class ExtensionService {
         return extensionRepository.save(newBlockExtension);
     }
 
+
+    @Transactional
     public void deleteBlockFixedExtension(String extensionName) {
         validateFixedExtensionName(extensionName);
-
-        Extension deletedBlockExtension = Extension.createFixedExtension(extensionName);
-        extensionRepository.delete(deletedBlockExtension);
+        checkFixedExtensionNameDeletePolicy(extensionName);
+        extensionRepository.deleteByExtensionName(extensionName);
     }
 
     private void validateFixedExtensionName(String extensionName) {
@@ -57,12 +59,11 @@ public class ExtensionService {
         return extensionRepository.save(newBlockExtension);
     }
 
+    @Transactional
     public void deleteBlockCustomExtension(String extensionName) {
         validateCustomExtensionName(extensionName);
         checkCustomExtensionNameDeletePolicy(extensionName);
-
-        Extension deletedBlockExtension = Extension.createCustomExtension(extensionName);
-        extensionRepository.delete(deletedBlockExtension);
+        extensionRepository.deleteByExtensionName(extensionName);
     }
 
 
