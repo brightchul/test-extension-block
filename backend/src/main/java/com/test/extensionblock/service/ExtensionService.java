@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,12 +21,26 @@ import java.util.stream.Collectors;
 public class ExtensionService {
 
     final Long maxlengthLimit = 20L;
+    final List<String> blockFixedExtensionList = List.of("bat", "cmd", "com" ,"cpl", "exe", "scr", "js");
 
     @Autowired
     private Validator validator;
 
     @Autowired
     private ExtensionRepository extensionRepository;
+
+    public Extension addBlockFixedExtension(String extensionName) {
+        validateFixedExtensionName(extensionName);
+
+        Extension newBlockExtension = Extension.createFixedExtension(extensionName);
+        return extensionRepository.save(newBlockExtension);
+    }
+
+    private void validateFixedExtensionName(String extensionName) {
+        if(!blockFixedExtensionList.contains(extensionName)) {
+            throw new ExtensionNameValidationException(extensionName + " is not fixed extension");
+        }
+    }
 
     public Extension addBlockCustomExtension(String extensionName) {
         validateCustomExtensionName(extensionName);
@@ -34,6 +49,8 @@ public class ExtensionService {
         Extension newBlockExtension = Extension.createCustomExtension(extensionName);
         return extensionRepository.save(newBlockExtension);
     }
+
+
 
     private void validateCustomExtensionName(String extensionName) {
         ExtensionNameDto extensionNameDto = new ExtensionNameDto(extensionName);

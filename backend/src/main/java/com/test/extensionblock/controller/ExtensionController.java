@@ -27,6 +27,17 @@ public class ExtensionController {
 
 
 
+    @PostMapping("/extension/fixed/{name}")
+    public ResponseEntity<ResponseDto> addBlockFixedExtension(@PathVariable String name) {
+        Extension result = extensionService.addBlockFixedExtension(name);
+        ResponseDto responseDto = ResponseDto.<Extension>builder()
+                .success(true)
+                .message("Extension " + name + " is added.")
+                .data(result).build();
+
+        return ResponseEntity.ok().body(responseDto);
+    }
+
     @PostMapping("/extension/custom/{name}")
     public ResponseEntity<ResponseDto> addBlockCustomExtension(@PathVariable String name) {
         Extension result = extensionService.addBlockCustomExtension(name);
