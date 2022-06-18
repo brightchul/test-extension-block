@@ -64,8 +64,14 @@ public class ExtensionService {
 
             throw new ExtensionNameValidationException(errorMessage);
         }
+
+        if (blockFixedExtensionList.contains(extensionName)) {
+            throw new ExtensionNameValidationException(extensionName + " is fixed extension");
+        }
+
     }
     private void checkCustomExtensionNamePolicy(String extensionName) {
+
         if (extensionRepository.findByExtensionName(extensionName) != null) {
             throw new ExtensionNameDuplicateException("extension is duplicated");
         }
