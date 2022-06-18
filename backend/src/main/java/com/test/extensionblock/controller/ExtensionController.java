@@ -28,7 +28,7 @@ public class ExtensionController {
     }
 
 
-    @PostMapping("/extension/{name}")
+    @PostMapping("/extension/custom/{name}")
     public ResponseEntity<ResponseDto> addBlockExtension(@PathVariable String name) {
         Extension result = extensionService.addBlockExtension(name);
         ResponseDto responseDto = ResponseDto.<Extension>builder()
