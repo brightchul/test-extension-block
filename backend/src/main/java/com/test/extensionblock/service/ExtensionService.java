@@ -2,6 +2,7 @@ package com.test.extensionblock.service;
 
 import com.test.extensionblock.dto.ExtensionNameDto;
 import com.test.extensionblock.entity.Extension;
+import com.test.extensionblock.error.ExtensionCountMaxException;
 import com.test.extensionblock.error.ExtensionNameDuplicateException;
 import com.test.extensionblock.error.ExtensionNameValidationException;
 import com.test.extensionblock.repository.ExtensionRepository;
@@ -17,6 +18,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class ExtensionService {
+
+    final Long maxlengthLimit = 20L;
+
     @Autowired
     private Validator validator;
 
@@ -45,6 +49,10 @@ public class ExtensionService {
 
         if (extensionRepository.findByExtensionName(extensionName) != null) {
             throw new ExtensionNameDuplicateException("extension is duplicated");
+        }
+
+        if(extensionRepository.count() >= 20) {
+            throw new ExtensionCountMaxException(maxlengthLimit);
         }
     }
 }

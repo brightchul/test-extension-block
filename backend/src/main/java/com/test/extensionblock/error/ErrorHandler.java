@@ -18,4 +18,10 @@ public class ErrorHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ResponseErrorDto(exception.getMessage()));
     }
+
+    @ExceptionHandler(ExtensionCountMaxException.class)
+    public ResponseEntity handleExtensionCountMaxException(ExtensionCountMaxException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseErrorDto(exception.getMessage()));
+    }
 }
