@@ -24,4 +24,10 @@ public class ErrorHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ResponseErrorDto(exception.getMessage()));
     }
+
+    @ExceptionHandler(ExtensionNameNotExistedException.class)
+    public ResponseEntity handleExtensionNameNotExistedException(ExtensionNameNotExistedException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseErrorDto(exception.getMessage()));
+    }
 }

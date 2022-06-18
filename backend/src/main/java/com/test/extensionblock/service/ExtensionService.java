@@ -4,6 +4,7 @@ import com.test.extensionblock.dto.ExtensionNameDto;
 import com.test.extensionblock.entity.Extension;
 import com.test.extensionblock.error.ExtensionCountMaxException;
 import com.test.extensionblock.error.ExtensionNameDuplicateException;
+import com.test.extensionblock.error.ExtensionNameNotExistedException;
 import com.test.extensionblock.error.ExtensionNameValidationException;
 import com.test.extensionblock.repository.ExtensionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,6 +36,13 @@ public class ExtensionService {
         return extensionRepository.save(newBlockExtension);
     }
 
+    public void deleteBlockFixedExtension(String extensionName) {
+        validateFixedExtensionName(extensionName);
+
+        Extension deletedBlockExtension = Extension.createFixedExtension(extensionName);
+        extensionRepository.delete(deletedBlockExtension);
+    }
+
     private void validateFixedExtensionName(String extensionName) {
         if(!blockFixedExtensionList.contains(extensionName)) {
             throw new ExtensionNameValidationException(extensionName + " is not fixed extension");
@@ -44,11 +51,20 @@ public class ExtensionService {
 
     public Extension addBlockCustomExtension(String extensionName) {
         validateCustomExtensionName(extensionName);
-        checkCustomExtensionNamePolicy(extensionName);
+        checkCustomExtensionNameCreatePolicy(extensionName);
 
         Extension newBlockExtension = Extension.createCustomExtension(extensionName);
         return extensionRepository.save(newBlockExtension);
     }
+
+    public void deleteBlockCustomExtension(String extensionName) {
+        validateCustomExtensionName(extensionName);
+        checkCustomExtensionNameDeletePolicy(extensionName);
+
+        Extension deletedBlockExtension = Extension.createCustomExtension(extensionName);
+        extensionRepository.delete(deletedBlockExtension);
+    }
+
 
 
 
@@ -70,10 +86,19 @@ public class ExtensionService {
         }
 
     }
-    private void checkCustomExtensionNamePolicy(String extensionName) {
+    private void checkCustomExtensionNameCreatePolicy(String extensionName) {
 
         if (extensionRepository.findByExtensionName(extensionName) != null) {
             throw new ExtensionNameDuplicateException("extension is duplicated");
+        }
+
+        if(extensionRepository.countByType("custom") >= maxlengthLimit) {
+            throw new ExtensionCountMaxException(maxlengthLimit);
+        }
+    }
+    private void checkCustomExtensionNameDeletePolicy(String extensionName) {
+        if (extensionRepository.findByExtensionName(extensionName) == null) {
+            throw new ExtensionNameNotExistedException("extension is not existed");
         }
 
         if(extensionRepository.countByType("custom") >= maxlengthLimit) {

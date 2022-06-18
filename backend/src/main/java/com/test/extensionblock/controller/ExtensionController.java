@@ -39,6 +39,16 @@ public class ExtensionController {
         return ResponseEntity.ok().body(responseDto);
     }
 
+    @DeleteMapping("/extension/fixed/{name}")
+    public ResponseEntity<ResponseDto> deleteBlockFixedExtension(@PathVariable String name) {
+        extensionService.deleteBlockFixedExtension(name);
+        ResponseDto responseDto = ResponseDto.<Extension>builder()
+                .success(true)
+                .message("Extension " + name + " is deleted.").build();
+
+        return ResponseEntity.ok().body(responseDto);
+    }
+
     @PostMapping("/extension/custom/{name}")
     public ResponseEntity<ResponseDto> addBlockCustomExtension(@PathVariable String name) {
         Extension result = extensionService.addBlockCustomExtension(name);
@@ -46,6 +56,16 @@ public class ExtensionController {
                 .success(true)
                 .message("Extension " + name + " is added.")
                 .data(result).build();
+
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    @DeleteMapping("/extension/custom/{name}")
+    public ResponseEntity<ResponseDto> deleteBlockCustomExtension(@PathVariable String name) {
+        extensionService.deleteBlockCustomExtension(name);
+        ResponseDto responseDto = ResponseDto.<Extension>builder()
+                .success(true)
+                .message("Extension " + name + " is deleted.").build();
 
         return ResponseEntity.ok().body(responseDto);
     }
