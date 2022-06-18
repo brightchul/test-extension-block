@@ -1,27 +1,26 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
+import { useMutation, useQuery } from "react-query";
+
 import {
   Box,
   Button,
   Checkbox,
   CheckboxGroup,
   CloseButton,
-  Flex,
-  Text,
-  Input,
   Container,
-  ModalOverlay,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
+  Flex,
+  Input,
   Modal,
-  useDisclosure,
-  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import axios from "axios";
-
-import { useQuery, useMutation } from "react-query";
 
 async function getAll() {
   return axios
@@ -35,9 +34,21 @@ async function addCustomExtensionAPI(extensionName: string) {
     .then((res) => res.data);
 }
 
+async function deleteCustomExtensionAPI(extensionName: string) {
+  return axios
+    .delete(`http://localhost:8080/extension/custom/${extensionName}`)
+    .then((res) => res.data);
+}
+
 async function addFixedExtensionAPI(extensionName: string) {
   return axios
     .post(`http://localhost:8080/extension/fixed/${extensionName}`)
+    .then((res) => res.data);
+}
+
+async function deleteFixedExtensionAPI(extensionName: string) {
+  return axios
+    .delete(`http://localhost:8080/extension/fixed/${extensionName}`)
     .then((res) => res.data);
 }
 
@@ -84,6 +95,25 @@ function App() {
     },
   });
 
+  const { mutate: deleteCustomExtension } = useMutation(
+    deleteCustomExtensionAPI,
+    {
+      onError: (error: any) => {
+        const { errorMessage } = error.response.data;
+        setErrorInfo({
+          title: "커스텀 확장자 추가 에러",
+          message: errorMessage,
+        });
+        onOpen();
+      },
+      onSuccess: (_, deletedExtensionName) => {
+        setCustomExtensions(
+          customExtensions.filter((ext) => ext !== deletedExtensionName)
+        );
+      },
+    }
+  );
+
   const { mutate: addFixedExtension } = useMutation(addFixedExtensionAPI, {
     onError: (error: any) => {
       const { errorMessage } = error.response.data;
@@ -101,6 +131,26 @@ function App() {
       });
     },
   });
+
+  const { mutate: deleteFixedExtension } = useMutation(
+    deleteFixedExtensionAPI,
+    {
+      onError: (error: any) => {
+        const { errorMessage } = error.response.data;
+        setErrorInfo({
+          title: "커스텀 확장자 추가 에러",
+          message: errorMessage,
+        });
+        onOpen();
+      },
+      onSuccess: (_, extensionName) => {
+        setFixedExtensions({
+          ...fixedExtensions,
+          [extensionName]: false,
+        });
+      },
+    }
+  );
 
   useEffect(() => {
     if (!data) return;
@@ -124,6 +174,7 @@ function App() {
 
     setFixedExtensions(newFixedExtensions);
     setCustomExtensions(customList);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -139,8 +190,12 @@ function App() {
                 <Checkbox
                   key={name}
                   isChecked={checked}
-                  onChange={() => {
-                    addFixedExtension(name);
+                  onChange={({ target }) => {
+                    if (checked) {
+                      deleteFixedExtension(name);
+                    } else {
+                      addFixedExtension(name);
+                    }
                   }}
                 >
                   {name}
@@ -214,13 +269,7 @@ function App() {
                       </Text>
                       <CloseButton
                         size="sm"
-                        onClick={() => {
-                          setCustomExtensions(
-                            customExtensions.filter(
-                              (extension) => extension !== customextension
-                            )
-                          );
-                        }}
+                        onClick={() => deleteCustomExtension(customextension)}
                       />
                     </Flex>
                   );
