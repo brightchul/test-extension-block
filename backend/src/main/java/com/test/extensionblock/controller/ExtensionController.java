@@ -6,8 +6,6 @@ import com.test.extensionblock.entity.Extension;
 import com.test.extensionblock.repository.ExtensionRepository;
 import com.test.extensionblock.service.ExtensionService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +26,10 @@ public class ExtensionController {
     }
 
 
+
     @PostMapping("/extension/custom/{name}")
-    public ResponseEntity<ResponseDto> addBlockExtension(@PathVariable String name) {
-        Extension result = extensionService.addBlockExtension(name);
+    public ResponseEntity<ResponseDto> addBlockCustomExtension(@PathVariable String name) {
+        Extension result = extensionService.addBlockCustomExtension(name);
         ResponseDto responseDto = ResponseDto.<Extension>builder()
                 .success(true)
                 .message("Extension " + name + " is added.")

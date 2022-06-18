@@ -29,9 +29,19 @@ public class Extension {
     @CreatedDate
     private LocalDateTime createdDate;
 
-    public static Extension createExtension(String extensionName) {
+    @Column
+    private String type;
+
+    public static Extension createFixedExtension(String extensionName) {
         Extension extension = new Extension();
         extension.setExtensionName(extensionName);
+        extension.setType("fixed");
+        return extension;
+    }
+    public static Extension createCustomExtension(String extensionName) {
+        Extension extension = new Extension();
+        extension.setExtensionName(extensionName);
+        extension.setType("custom");
         return extension;
     }
 }

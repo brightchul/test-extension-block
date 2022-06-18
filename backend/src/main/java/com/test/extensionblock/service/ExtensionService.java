@@ -27,14 +27,15 @@ public class ExtensionService {
     @Autowired
     private ExtensionRepository extensionRepository;
 
-    public Extension addBlockExtension(String extensionName) {
-        validateExtensionName(extensionName);
+    public Extension addBlockCustomExtension(String extensionName) {
+        validateCustomExtensionName(extensionName);
+        checkCustomExtensionNamePolicy(extensionName);
 
-        Extension newBlockExtension = Extension.createExtension(extensionName);
+        Extension newBlockExtension = Extension.createCustomExtension(extensionName);
         return extensionRepository.save(newBlockExtension);
     }
 
-    public void validateExtensionName(String extensionName) {
+    private void validateCustomExtensionName(String extensionName) {
         ExtensionNameDto extensionNameDto = new ExtensionNameDto(extensionName);
         Set<ConstraintViolation<ExtensionNameDto>> validationResult = validator.validate(extensionNameDto);
 
@@ -46,12 +47,13 @@ public class ExtensionService {
 
             throw new ExtensionNameValidationException(errorMessage);
         }
-
+    }
+    private void checkCustomExtensionNamePolicy(String extensionName) {
         if (extensionRepository.findByExtensionName(extensionName) != null) {
             throw new ExtensionNameDuplicateException("extension is duplicated");
         }
 
-        if(extensionRepository.count() >= 20) {
+        if(extensionRepository.countByType("custom") >= maxlengthLimit) {
             throw new ExtensionCountMaxException(maxlengthLimit);
         }
     }
