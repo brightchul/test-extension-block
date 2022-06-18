@@ -10,6 +10,7 @@ import com.test.extensionblock.repository.ExtensionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 public class ExtensionService {
 
     final Long maxlengthLimit = 20L;
-    final List<String> blockFixedExtensionList = List.of("bat", "cmd", "com" ,"cpl", "exe", "scr", "js");
+    final List<String> blockFixedExtensionList = List.of("bat", "cmd", "com", "cpl", "exe", "scr", "js");
 
     @Autowired
     private Validator validator;
@@ -31,21 +32,34 @@ public class ExtensionService {
 
     public Extension addBlockFixedExtension(String extensionName) {
         validateFixedExtensionName(extensionName);
+        checkFixedExtensionNameCreatePolicy(extensionName);
 
         Extension newBlockExtension = Extension.createFixedExtension(extensionName);
         return extensionRepository.save(newBlockExtension);
     }
 
-    public void deleteBlockFixedExtension(String extensionName) {
-        validateFixedExtensionName(extensionName);
-
-        Extension deletedBlockExtension = Extension.createFixedExtension(extensionName);
-        extensionRepository.delete(deletedBlockExtension);
+    private void validateFixedExtensionName(String extensionName) {
+        if (!blockFixedExtensionList.contains(extensionName)) {
+            throw new ExtensionNameValidationException(extensionName + " is not fixed extension");
+        }
     }
 
-    private void validateFixedExtensionName(String extensionName) {
-        if(!blockFixedExtensionList.contains(extensionName)) {
-            throw new ExtensionNameValidationException(extensionName + " is not fixed extension");
+    private void checkFixedExtensionNameCreatePolicy(String extensionName) {
+        if (extensionRepository.findByExtensionName(extensionName) != null) {
+            throw new ExtensionNameDuplicateException("extension is already block");
+        }
+    }
+
+    @Transactional
+    public void deleteBlockFixedExtension(String extensionName) {
+        validateFixedExtensionName(extensionName);
+        checkFixedExtensionNameDeletePolicy(extensionName);
+        extensionRepository.deleteByExtensionName(extensionName);
+    }
+
+    private void checkFixedExtensionNameDeletePolicy(String extensionName) {
+        if (extensionRepository.findByExtensionName(extensionName) == null) {
+            throw new ExtensionNameNotExistedException("extension is not block");
         }
     }
 
@@ -57,15 +71,12 @@ public class ExtensionService {
         return extensionRepository.save(newBlockExtension);
     }
 
+    @Transactional
     public void deleteBlockCustomExtension(String extensionName) {
         validateCustomExtensionName(extensionName);
         checkCustomExtensionNameDeletePolicy(extensionName);
-
-        Extension deletedBlockExtension = Extension.createCustomExtension(extensionName);
-        extensionRepository.delete(deletedBlockExtension);
+        extensionRepository.deleteByExtensionName(extensionName);
     }
-
-
 
 
     private void validateCustomExtensionName(String extensionName) {
@@ -86,22 +97,22 @@ public class ExtensionService {
         }
 
     }
+
     private void checkCustomExtensionNameCreatePolicy(String extensionName) {
-
         if (extensionRepository.findByExtensionName(extensionName) != null) {
-            throw new ExtensionNameDuplicateException("extension is duplicated");
+            throw new ExtensionNameDuplicateException("extension is already block");
         }
-
-        if(extensionRepository.countByType("custom") >= maxlengthLimit) {
+        if (extensionRepository.countByType("custom") >= maxlengthLimit) {
             throw new ExtensionCountMaxException(maxlengthLimit);
         }
     }
+
+
     private void checkCustomExtensionNameDeletePolicy(String extensionName) {
         if (extensionRepository.findByExtensionName(extensionName) == null) {
-            throw new ExtensionNameNotExistedException("extension is not existed");
+            throw new ExtensionNameNotExistedException("extension is not block");
         }
-
-        if(extensionRepository.countByType("custom") >= maxlengthLimit) {
+        if (extensionRepository.countByType("custom") >= maxlengthLimit) {
             throw new ExtensionCountMaxException(maxlengthLimit);
         }
     }
