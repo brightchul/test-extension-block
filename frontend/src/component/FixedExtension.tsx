@@ -1,4 +1,4 @@
-import { Checkbox, CheckboxGroup, Flex } from "@chakra-ui/react";
+import { Checkbox, CheckboxGroup, Flex, Text } from "@chakra-ui/react";
 
 import { useFixedExtensionMutation } from "../hook";
 
@@ -20,25 +20,32 @@ export default function FixedExtension({
     });
 
   return (
-    <Flex>
-      <Flex width="300px">고정 확장자</Flex>
-      <Flex>
+    <Flex mt={3}>
+      <Flex p="10px" flexShrink={0} width="150px">
+        <Text fontSize="xl">고정 확장자</Text>
+      </Flex>
+      <Flex p="10px">
         <CheckboxGroup>
-          {Object.entries(fixedExtensions).map(([name, checked]) => (
-            <Checkbox
-              key={name}
-              isChecked={checked}
-              onChange={() => {
-                if (checked) {
-                  deleteFixedExtension(name);
-                } else {
-                  addFixedExtension(name);
-                }
-              }}
-            >
-              {name}
-            </Checkbox>
-          ))}
+          <Flex direction={["row"]} flexWrap="wrap" gap={4}>
+            {Object.entries(fixedExtensions).map(([name, checked]) => (
+              <Checkbox
+                key={name}
+                isChecked={checked}
+                _hover={{ backgroundColor: "#eee" }}
+                p={1}
+                borderRadius={4}
+                onChange={() => {
+                  if (checked) {
+                    deleteFixedExtension(name);
+                  } else {
+                    addFixedExtension(name);
+                  }
+                }}
+              >
+                {name}
+              </Checkbox>
+            ))}
+          </Flex>
         </CheckboxGroup>
       </Flex>
     </Flex>

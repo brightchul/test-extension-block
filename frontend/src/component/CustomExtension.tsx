@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { Box, Button, Flex, Input } from "@chakra-ui/react";
+import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
 
 import { useCustomExtensionMutation } from "../hook";
 import CustomExtensionItem from "./CustomExtensionItem";
@@ -58,9 +58,11 @@ export default function CustomExtension({
 
   return (
     <Flex>
-      <Box width="100px">커스텀 확장자</Box>
-      <Box>
-        <Flex p="10px" gap="10px">
+      <Flex p={3} flexShrink={0} width="150px">
+        <Text fontSize="xl">커스텀 확장자</Text>
+      </Flex>
+      <Flex direction="column" flexGrow={1} p={3}>
+        <Flex gap={3}>
           <Input
             ref={addedExtensionInput}
             placeholder="확장자 입력"
@@ -68,13 +70,19 @@ export default function CustomExtension({
           />
           <Button onClick={handleAddCustomExtension}>추가</Button>
         </Flex>
-        <Box p="10px">
+        <Box
+          p={3}
+          mt={3}
+          border="1px solid black"
+          borderRadius="5px"
+          borderColor="#d3cfcf"
+        >
           <Box>
             <span>
               {customExtensions.length}/{MAX_LIMIT}
             </span>
           </Box>
-          <Flex flexWrap="wrap" gap="10px">
+          <Flex flexWrap="wrap" gap={3} mt={3}>
             {customExtensions.map((customExtension) => (
               <CustomExtensionItem
                 key={customExtension}
@@ -84,7 +92,7 @@ export default function CustomExtension({
             ))}
           </Flex>
         </Box>
-      </Box>
+      </Flex>
     </Flex>
   );
 }

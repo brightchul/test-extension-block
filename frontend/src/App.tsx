@@ -69,7 +69,7 @@ function App() {
 
   return (
     <div>
-      <Container width="xxl">
+      <Container maxWidth="container.lg" mt={10}>
         <FixedExtension
           fixedExtensionList={fixedExtensions}
           errorCallback={openErrorModalWithInfo}
