@@ -10,9 +10,8 @@ spring:
       path: /h2-console
       settings.trace: false
       settings.web-allow-others: false
-
-jpa:
-  database-platform: org.hibernate.dialect.H2Dialect
-  show-sql: true
-  properties.hibernate.format_sql: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    properties.hibernate.format_sql: true
 
