@@ -33,6 +33,11 @@ jar {
 	enabled = false
 }
 
+bootJar {
+	archivesBaseName='block-extension'
+	archiveFileName='block-extension.jar'
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
